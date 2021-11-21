@@ -1,11 +1,18 @@
-import { db } from '../../db'
+import { Request, Response } from 'express'
+import { BaseTodo, db, insertTodo, Todo } from '../../db'
 
 export const todoRouter = require('express').Router()
-todoRouter.route('/').get((req: any, res: any) => res.send(db))
+todoRouter
+  .route('/')
+  .get((req: Request, res: Response<Todo[]>) => res.send(db))
+  .post((req: Request<{},{}, BaseTodo>, res: Response<Todo>) => {
+    const insertedTodo = insertTodo(req.body)
+    return res.status(201).send(insertedTodo)
+  })
 todoRouter
   .route('/:id')
-  .get((req: any, res: any) => new Error('Not yet implemented'))
-  .post((req: any, res: any) => new Error('Not yet implemented'))
-  .put((req: any, res: any) => new Error('Not yet implemented'))
-  .patch((req: any, res: any) => new Error('Not yet implemented'))
-  .delete((req: any, res: any) => new Error('Not yet implemented'))
+  .get((req: Request, res: Response) => new Error('Not yet implemented'))
+  .put((req: Request, res: Response) => new Error('Not yet implemented'))
+  .patch((req: Request, res: Response) => new Error('Not yet implemented'))
+  .delete((req: Request, res: Response) => new Error('Not yet implemented'))
+
