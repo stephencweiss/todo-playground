@@ -19,6 +19,6 @@ todoRouter
   .patch((req: any, res: any) => new Error('Not yet implemented'))
   .delete((req: any, res: any) => new Error('Not yet implemented'))
 
-app.use('/todos', todoRouter)
+app.use('/api/todos', todoRouter)
 
 app.get('*', (_req: any, res: any) => res.status(404).send())

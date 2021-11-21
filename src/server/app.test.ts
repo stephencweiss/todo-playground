@@ -1,12 +1,12 @@
-import request from 'supertest'
-import { app } from './app'
+const request = require('supertest')
+const { app } = require('./app')
 
 describe('Server', () => {
   test('/GET todos', async () => {
     await request(app)
-      .get('/todos')
+      .get('/api/todos')
       .expect(200)
-      .then((response) => {
+      .then((response: any) => {
         expect(response.body).toEqual([])
       })
   })
