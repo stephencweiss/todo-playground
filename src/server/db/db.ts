@@ -34,7 +34,6 @@ export const removeTodo = (id: string) => {
   db = db.filter((todo) => todo.id !== Number(id))
 }
 
-
 export const _resetDb = () => {
   db = []
 }

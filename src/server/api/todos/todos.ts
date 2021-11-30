@@ -1,7 +1,14 @@
-import { Request, Response } from 'express'
-import { BaseTodo, db, insertTodo, removeTodo, Todo, updateTodo } from '../../db'
+import { Request, Response, Router } from 'express'
+import {
+  BaseTodo,
+  db,
+  insertTodo,
+  removeTodo,
+  Todo,
+  updateTodo,
+} from '../../db'
 
-export const todoRouter = require('express').Router()
+export const todoRouter = Router()
 todoRouter
   .route('/')
   .get((req: Request, res: Response<Todo[]>) => res.send(db))
@@ -49,9 +56,9 @@ todoRouter
       const { id } = req.params
       removeTodo(id)
       res.status(204).send()
-    } catch(e){
+    } catch (e) {
       res.status(400)
-      if(hasMessage(e)){
+      if (hasMessage(e)) {
         res.send(e.message)
       }
       res.send()

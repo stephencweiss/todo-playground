@@ -1,14 +1,14 @@
-const express = require('express')
-const { urlencoded, json } = require('body-parser')
-const morgan = require('morgan')
+import express from 'express'
+import bp from 'body-parser'
+import morgan from 'morgan'
 
-const { apiRouter } = require('./api')
+import { apiRouter } from '@/api'
 
 export const app = express()
 
 /** General Middleware */
-app.use(urlencoded({ extended: true }))
-app.use(json())
+app.use(bp.urlencoded({ extended: true }))
+app.use(bp.json())
 app.use(morgan('dev'))
 
 /** Routes */
