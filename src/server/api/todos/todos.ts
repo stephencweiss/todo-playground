@@ -1,6 +1,12 @@
 import { Request, Response, Router } from 'express'
-import { BaseTodo, db, insertTodo, removeTodo, Todo, updateTodo } from '../../db'
-
+import {
+  BaseTodo,
+  db,
+  insertTodo,
+  removeTodo,
+  Todo,
+  updateTodo,
+} from '../../db'
 
 export const todoRouter = Router()
 todoRouter
@@ -50,9 +56,9 @@ todoRouter
       const { id } = req.params
       removeTodo(id)
       res.status(204).send()
-    } catch(e){
+    } catch (e) {
       res.status(400)
-      if(hasMessage(e)){
+      if (hasMessage(e)) {
         res.send(e.message)
       }
       res.send()

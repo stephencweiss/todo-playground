@@ -1,6 +1,6 @@
-import express from 'express';
-import bp from 'body-parser';
-import morgan from 'morgan';
+import express from 'express'
+import bp from 'body-parser'
+import morgan from 'morgan'
 
 import { apiRouter } from '@/api'
 
