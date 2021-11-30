@@ -2,7 +2,7 @@ import express from 'express';
 import bp from 'body-parser';
 import morgan from 'morgan';
 
-import { apiRouter } from './api'
+import { apiRouter } from '@/api'
 
 export const app = express()
 
