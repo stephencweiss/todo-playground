@@ -1,17 +1,11 @@
 import { Request, Response, Router } from 'express'
-import {
-  BaseTodo,
-  db,
-  insertTodo,
-  removeTodo,
-  Todo,
-  updateTodo,
-} from '../../db'
+import { fetchTodos, insertTodo, removeTodo, updateTodo } from './todos.service'
+import { BaseTodo, Todo } from './todos.model'
 
 export const todoRouter = Router()
 todoRouter
   .route('/')
-  .get((req: Request, res: Response<Todo[]>) => res.send(db))
+  .get((req: Request, res: Response<Todo[]>) => res.send(fetchTodos()))
   .post((req: Request<{}, {}, BaseTodo>, res: Response<Todo>) => {
     const insertedTodo = insertTodo(req.body)
     return res.status(201).send(insertedTodo)
@@ -22,8 +16,9 @@ todoRouter
   .get((req: Request<{ id: string }>, res: Response) => {
     try {
       const { id } = req.params
-      const found = db.find((todo) => todo.id === Number(id))
-      if (!found) throw new Error(`No TODO with id ${id}`)
+      const found = fetchTodos((todo) => todo.id === Number(id))
+
+      if (!found || found.length === 0) throw new Error(`No TODO with id ${id}`)
       res.send(found)
     } catch (e: unknown) {
       if (hasMessage(e)) {

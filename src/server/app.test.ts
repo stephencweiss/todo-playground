@@ -1,6 +1,6 @@
 const request = require('supertest')
 const { app } = require('./app')
-const { _resetDb } = require('./db')
+const { _resetDb, db } = require('./todos')
 
 describe('Server', () => {
   beforeEach(() => {
@@ -8,16 +8,16 @@ describe('Server', () => {
   })
   test('GET /todos', async () => {
     await request(app)
-      .get('/api/todos')
+      .get('/api/todo')
       .expect(200)
       .then((response: any) => {
         expect(response.body).toEqual([])
       })
   })
-  test('POST /todos', async () => {
+  test('POST /todo', async () => {
     const test = { description: 'Test' }
     await request(app)
-      .post('/api/todos')
+      .post('/api/todo')
       .send(test)
       .expect(201)
       .then((response: any) => {
@@ -25,28 +25,28 @@ describe('Server', () => {
         expect(response.body.description).toEqual(test.description)
       })
   })
-  test('GET /todos/:id', async () => {
+  test('GET /todo/:id', async () => {
     const id = 1
     await request(app)
-      .get(`/api/todos/${id}`)
+      .get(`/api/todo/${id}`)
       .expect(404)
       .then((response: any) => {
         expect(response.error.text).toContain(`No TODO with id ${id}`)
       })
   })
-  test('PATCH /todos/:id', async () => {
+  test('PATCH /todo/:id', async () => {
     const original = { description: 'Test' }
     const updated = { description: 'Updated-Test' }
-    await request(app).post('/api/todos').send(original)
+    await request(app).post('/api/todo').send(original)
 
-    await request(app).patch('/api/todos/1').send(updated).expect(204)
+    await request(app).patch('/api/todo/1').send(updated).expect(204)
   })
-  test('DELETE /todos/:id', async () => {
+  test('DELETE /todo/:id', async () => {
     const original = { description: 'Test' }
     const updated = { description: 'Updated-Test' }
-    await request(app).post('/api/todos').send(original)
+    await request(app).post('/api/todo').send(original)
 
-    await request(app).patch('/api/todos/1').send(updated).expect(204)
+    await request(app).patch('/api/todo/1').send(updated).expect(204)
   })
   test('/GET unknown path returns 404', async () => {
     await request(app).get('/unknown-path').expect(404)
