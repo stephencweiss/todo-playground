@@ -1,7 +1,8 @@
-import { Request, Response } from 'express'
+import { Request, Response, Router } from 'express'
 import { BaseTodo, db, insertTodo, removeTodo, Todo, updateTodo } from '../../db'
 
-export const todoRouter = require('express').Router()
+
+export const todoRouter = Router()
 todoRouter
   .route('/')
   .get((req: Request, res: Response<Todo[]>) => res.send(db))
