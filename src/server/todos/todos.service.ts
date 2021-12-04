@@ -1,23 +1,25 @@
 import { Todo, BaseTodo } from './todos.model'
+import { _db } from '../../db'
+import { Filter, WithId, Document, FindOptions } from 'mongodb'
 
-export let db: Todo[] = []
+const todos = _db.collection('todo')
+let db: Todo[] = []
 
-export const _resetDb = () => {
-  db = []
+export const fetchTodos = (
+  query?: Filter<WithId<Document>>,
+  options?: FindOptions<Document>,
+): any | Todo[] => {
+  const found = query ? todos.find(query, options) : todos.find()
+  // TODO: Consider converting to a stream
+  return found.toArray()
 }
 
-export const fetchTodos = (predicate?: (arg: Todo) => boolean): Todo[] => {
-  return predicate ? db.filter(predicate) : db
-}
-
-export const insertTodo = (todo: BaseTodo): Todo => {
+// TODO: Look at return type of this function and make sure it's appropriate, see if we can narrow it a bit.
+export const insertTodo = async (todo: BaseTodo) => {
   const id = db.length + 1
   const now = new Date().toISOString()
   const fullTodo = { ...todo, id, created: now, modified: now }
-  // db.insertOne({ fullTodo })
-  db.push(fullTodo)
-  return fullTodo
-}
+  return await todos.insertOne({ fullTodo })}
 
 export const updateTodo = (id: string, updates: Partial<Todo>) => {
   const found = db.find((todo) => todo.id === Number(id))

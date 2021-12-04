@@ -6,8 +6,8 @@ export const todoRouter = Router()
 todoRouter
   .route('/')
   .get((req: Request, res: Response<Todo[]>) => res.send(fetchTodos()))
-  .post((req: Request<{}, {}, BaseTodo>, res: Response<Todo>) => {
-    const insertedTodo = insertTodo(req.body)
+  .post(async (req: Request<{}, {}, BaseTodo>, res: Response<Todo>) => {
+    const insertedTodo = await insertTodo(req.body) as unknown as Todo // TODO: figure out how to type the document more specifically -- mongoose might be the solution here
     return res.status(201).send(insertedTodo)
   })
 
@@ -16,7 +16,7 @@ todoRouter
   .get((req: Request<{ id: string }>, res: Response) => {
     try {
       const { id } = req.params
-      const found = fetchTodos((todo) => todo.id === Number(id))
+      const found = fetchTodos((todo: Todo) => todo.id === Number(id))
 
       if (!found || found.length === 0) throw new Error(`No TODO with id ${id}`)
       res.send(found)
