@@ -1,7 +1,7 @@
 import { Request, Response, Router } from 'express'
 import { fetchTodos, insertTodo, removeTodo, updateTodo } from './todos.service'
-import { BaseTodo, Todo } from './todos.model'
-import { ObjectId } from 'mongodb'
+import { Todo } from './todos.model'
+import { fetchTodoById } from '.'
 
 export const todoRouter = Router()
 todoRouter
@@ -9,7 +9,7 @@ todoRouter
   .get(async (_req: Request, res: Response<Todo[]>) =>
     res.send(await fetchTodos()),
   )
-  .post(async (req: Request<{}, {}, BaseTodo>, res: Response<Todo>) => {
+  .post(async (req: Request<{}, {}, Todo>, res: Response<Todo>) => {
     const insertedTodo = (await insertTodo(req.body)) as unknown as Todo // TODO: figure out how to type the document more specifically -- mongoose might be the solution here
     return res.status(201).send(insertedTodo)
   })
@@ -19,9 +19,8 @@ todoRouter
   .get(async (req: Request<{ id: string }>, res: Response) => {
     try {
       const { id } = req.params
-      const found = await fetchTodos({ _id: new ObjectId(id) })
-
-      if (!found || found.length === 0) throw new Error(`No TODO with id ${id}`)
+      const found = await fetchTodoById(id)
+      if (!found) throw new Error(`No TODO with id ${id}`)
       res.send(found)
     } catch (e: unknown) {
       if (hasMessage(e)) {
@@ -35,11 +34,10 @@ todoRouter
     (req: Request<{}, {}, Partial<Todo>>, res: Response) =>
       new Error('Not yet implemented'),
   )
-  .patch((req: Request, res: Response) => {
+  .patch(async (req: Request<{ id: string }, {}, Todo>, res: Response) => {
     try {
       const { id } = req.params
-      updateTodo(id, req.body)
-      res.status(204).send()
+      res.status(204).send(await updateTodo(id, req.body))
     } catch (e) {
       res.status(400)
       if (hasMessage(e)) {

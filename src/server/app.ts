@@ -2,7 +2,9 @@ import express from 'express'
 import bp from 'body-parser'
 import morgan from 'morgan'
 import { todoRouter } from './todos'
+import { dbConnect } from '../db'
 
+dbConnect()
 export const app = express()
 
 const apiRouter = express.Router()

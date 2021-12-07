@@ -19,7 +19,7 @@
     "lint:fix": "prettier --write .",
     "start": "node dist/index.js",
     "tdd": "node --no-warnings --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
-    "test": "jest"
+    "test": "node --no-warnings --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "author": "Stephen",
   "license": "ISC",
@@ -27,6 +27,7 @@
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
     "mongodb": "^4.2.0",
+    "mongoose": "^6.0.15",
     "morgan": "^1.10.0"
   },
   "devDependencies": {

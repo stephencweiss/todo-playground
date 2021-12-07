@@ -1,14 +1,10 @@
 import request from 'supertest'
 import { app } from './app'
-import { _db, resetCollection } from '../db'
+import { TodoModel } from './todos/todos.schema'
 
 describe('Server', () => {
-  beforeAll(async () => {
-    await _db.collection('todo')
-  })
   beforeEach(async () => {
-    // _resetDb()
-    resetCollection('todo')
+    await TodoModel.deleteMany()
   })
   test('GET /todos', async () => {
     await request(app)
@@ -25,8 +21,8 @@ describe('Server', () => {
       .send(test)
       .expect(201)
       .then((response: any) => {
-        expect(response.body.acknowledged).toBeTruthy()
-        expect(response.body.insertedId).toBeTruthy() // if i want the _actual_ object returned, i'll either need to fetch it or use mongoose which provides the object
+        expect(response.body.description).toEqual(test.description)
+        expect(response.body._id).toBeTruthy()
       })
   })
   test('GET /todo/:id', async () => {
@@ -41,15 +37,14 @@ describe('Server', () => {
     const test = { description: `Test ${new Date().toISOString()}` }
     const posted = await request(app).post('/api/todo').send(test)
 
-    const { insertedId } = posted.body
+    const { _id } = posted.body
 
     await request(app)
-      .get(`/api/todo/${insertedId}`)
+      .get(`/api/todo/${_id}`)
       .expect(200)
       .then((response: any) => {
-        expect(response.body.length).toBe(1)
-        expect(response.body[0]._id).toBe(insertedId)
-        expect(response.body[0].description).toBe(test.description)
+        expect(response.body._id).toBe(_id)
+        expect(response.body.description).toBe(test.description)
       })
   })
 
@@ -57,19 +52,16 @@ describe('Server', () => {
     const original = { description: 'Test' }
     const updated = { description: 'Updated-Test' }
     const posted = await request(app).post('/api/todo').send(original)
-    const { insertedId } = posted.body
-    await request(app)
-      .patch(`/api/todo/${insertedId}`)
-      .send(updated)
-      .expect(204)
+    const { _id } = posted.body
+    await request(app).patch(`/api/todo/${_id}`).send(updated).expect(204)
   })
 
   test('DELETE /todo/:id', async () => {
     const original = { description: 'Test' }
     const posted = await request(app).post('/api/todo').send(original)
 
-    const { insertedId } = posted.body
-    await request(app).delete(`/api/todo/${insertedId}`).expect(204)
+    const { _id } = posted.body
+    await request(app).delete(`/api/todo/${_id}`).expect(204)
   })
 
   test('/GET unknown path returns 404', async () => {
