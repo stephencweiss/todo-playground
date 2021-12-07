@@ -1,1 +1,1 @@
-export { pool, _db } from './connection'
+export { _db, resetCollection } from './connection'
