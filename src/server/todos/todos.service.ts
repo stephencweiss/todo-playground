@@ -23,7 +23,7 @@ export const updateTodo = async (id: string, updates: Partial<Todo>) => {
   // The question is: is it worth doing this find at all? or can we just rely on the db?
   const found = await fetchTodos({ _id: new ObjectId(id) })
   if (!found) throw new Error(`No TODO with id ${id}`)
-  return await todos.updateOne({ _id: new ObjectId(id) }, {$set: updates})
+  return await todos.updateOne({ _id: new ObjectId(id) }, { $set: updates })
 }
 
 export const removeTodo = async (id: string) => {

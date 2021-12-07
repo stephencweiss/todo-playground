@@ -20,10 +20,9 @@ const dbName = process.env.NODE_ENV === 'test' ? 'todo-test' : 'todo-playground'
 export const _db = await pool.db(dbName)
 
 // should probably move this to a different place and make it clear it's really only meant for using with tests (though there's nothing test specific about it)
-export async function resetCollection(collectionName: string){
+export async function resetCollection(collectionName: string) {
   await _db.collection(collectionName).deleteMany({})
 }
-
 
 // export async function listDatabases(client: any) {
 //   const databasesList = await client.db().admin().listDatabases()

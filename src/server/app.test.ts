@@ -30,7 +30,7 @@ describe('Server', () => {
       })
   })
   test('GET /todo/:id', async () => {
-    const id = "61aec76836b372f9eeac4042"
+    const id = '61aec76836b372f9eeac4042'
     await request(app)
       .get(`/api/todo/${id}`)
       .expect(404)
@@ -41,14 +41,16 @@ describe('Server', () => {
     const test = { description: `Test ${new Date().toISOString()}` }
     const posted = await request(app).post('/api/todo').send(test)
 
-    const {insertedId} = posted.body
+    const { insertedId } = posted.body
 
-    await request(app).get(`/api/todo/${insertedId}`).expect(200)
-    .then((response: any) => {
-      expect(response.body.length).toBe(1)
-      expect(response.body[0]._id).toBe(insertedId)
-      expect(response.body[0].description).toBe(test.description)
-    })
+    await request(app)
+      .get(`/api/todo/${insertedId}`)
+      .expect(200)
+      .then((response: any) => {
+        expect(response.body.length).toBe(1)
+        expect(response.body[0]._id).toBe(insertedId)
+        expect(response.body[0].description).toBe(test.description)
+      })
   })
 
   test('PATCH /todo/:id', async () => {
@@ -56,7 +58,10 @@ describe('Server', () => {
     const updated = { description: 'Updated-Test' }
     const posted = await request(app).post('/api/todo').send(original)
     const { insertedId } = posted.body
-    await request(app).patch(`/api/todo/${insertedId}`).send(updated).expect(204)
+    await request(app)
+      .patch(`/api/todo/${insertedId}`)
+      .send(updated)
+      .expect(204)
   })
 
   test('DELETE /todo/:id', async () => {
