@@ -1,40 +1,31 @@
 import { Todo, BaseTodo } from './todos.model'
 import { _db } from '../../db'
-import { Filter, WithId, Document, FindOptions } from 'mongodb'
+import { Filter, WithId, Document, FindOptions, ObjectId } from 'mongodb'
 
 const todos = _db.collection('todo')
-let db: Todo[] = []
 
-export const fetchTodos = (
+export const fetchTodos = async (
   query?: Filter<WithId<Document>>,
   options?: FindOptions<Document>,
-): any | Todo[] => {
+): Promise<any | Todo[]> => {
   const found = query ? todos.find(query, options) : todos.find()
+  const foundResults = await found.toArray()
   // TODO: Consider converting to a stream
-  return found.toArray()
+  return foundResults
 }
 
 // TODO: Look at return type of this function and make sure it's appropriate, see if we can narrow it a bit.
 export const insertTodo = async (todo: BaseTodo) => {
-  const id = db.length + 1
-  const now = new Date().toISOString()
-  const fullTodo = { ...todo, id, created: now, modified: now }
-  return await todos.insertOne({ fullTodo })}
-
-export const updateTodo = (id: string, updates: Partial<Todo>) => {
-  const found = db.find((todo) => todo.id === Number(id))
-  const now = new Date().toISOString()
-  if (!found) throw new Error(`No TODO with id ${id}`)
-  db = db.map((todo) => {
-    if (todo.id === Number(id)) {
-      todo = { ...todo, ...updates, modified: now }
-    }
-    return todo
-  })
+  return await todos.insertOne(todo)
 }
 
-export const removeTodo = (id: string) => {
-  const found = db.find((todo) => todo.id === Number(id))
+export const updateTodo = async (id: string, updates: Partial<Todo>) => {
+  // The question is: is it worth doing this find at all? or can we just rely on the db?
+  const found = await fetchTodos({ _id: new ObjectId(id) })
   if (!found) throw new Error(`No TODO with id ${id}`)
-  db = db.filter((todo) => todo.id !== Number(id))
+  return await todos.updateOne({ _id: new ObjectId(id) }, {$set: updates})
+}
+
+export const removeTodo = async (id: string) => {
+  return await todos.deleteOne({ _id: new ObjectId(id) })
 }
