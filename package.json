@@ -18,7 +18,7 @@
     "lint": "prettier --check .",
     "lint:fix": "prettier --write .",
     "start": "node dist/index.js",
-    "tdd": "node --no-warnings --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
+    "tdd": "node --no-warnings --experimental-vm-modules node_modules/jest/bin/jest.js --watch --detectOpenHandles",
     "test": "node --no-warnings --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "author": "Stephen",
