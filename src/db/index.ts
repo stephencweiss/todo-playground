@@ -1,1 +1,1 @@
-export { _db, resetCollection } from './connection'
+export { dbConnect } from './connection'
