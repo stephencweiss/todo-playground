@@ -1,4 +1,5 @@
 import { Request, Response, Router } from 'express'
+import { hasMessage } from '../../utils'
 import { fetchTodos, insertTodo, removeTodo, updateTodo } from './todos.service'
 import { Todo } from './todos.model'
 import { fetchTodoById } from '.'
@@ -60,7 +61,3 @@ todoRouter
       res.send()
     }
   })
-
-function hasMessage(arg: unknown): arg is { message: any } {
-  return typeof arg === 'object' && arg !== null && 'message' in arg
-}

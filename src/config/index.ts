@@ -24,6 +24,7 @@ export const config = {
    */
   jwtSecret: process.env.JWT_SECRET,
   jwtAlgorithm: process.env.JWT_ALGO,
+  jwtExpiryDays: 60,
 
   // TODO revisit the remaining of this config
   //

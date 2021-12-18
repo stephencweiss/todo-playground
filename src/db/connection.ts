@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 import { config } from '../config'
 
-const dbName = process.env.NODE_ENV === 'test' ? 'todo-test' : 'todo-playground'
+const dbName = process.env.NODE_ENV === 'test' ? 'todo_test' : 'todo_playground'
 const CONNECTION_STRING = `mongodb+srv://${config.dbUser}:${config.dbPassword}@sandbox.tv0tb.mongodb.net/${dbName}?retryWrites=true&w=majority`
 
 export async function dbConnect() {
