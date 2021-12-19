@@ -2,9 +2,13 @@ import express from 'express'
 import cors, { CorsOptions } from 'cors'
 import bp from 'body-parser'
 import morgan from 'morgan'
+import { config } from '../config'
 import { todoRouter } from './todos'
 import { dbConnect } from '../db'
+import { authRouter } from './auth'
+import { userRouter } from './users'
 
+const devEnv = (process?.env?.NODE_ENV ?? '') === 'development'
 dbConnect()
 
 const allowList = ['http://mydomain.com', 'http://myotherdomain.com']
@@ -30,10 +34,13 @@ const apiRouter = express.Router()
 app.use(cors(corsOptions))
 app.use(bp.urlencoded({ extended: true }))
 app.use(bp.json())
-app.use(morgan('dev'))
+app.use(morgan(devEnv ? 'dev' : 'common'))
 
 /** Routes */
-app.use('/api', apiRouter)
+app.use(config.api.prefix, apiRouter)
+apiRouter.use('/auth', authRouter)
+/** TODO: Add Middleware for Protected Routes */
 apiRouter.use('/todo', todoRouter)
+apiRouter.use('/', userRouter)
 
 app.get('*', (_req: any, res: any) => res.status(404).send())

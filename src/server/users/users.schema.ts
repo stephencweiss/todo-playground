@@ -26,8 +26,8 @@ export const UserSchema = new mongoose.Schema<User>(
     },
     bio: String,
     image: String,
-    hash: { type: String, required: [true, "can't be blank"] },
-    salt: { type: String, required: [true, "can't be blank"] },
+    hash: String,
+    salt: String,
   },
   { timestamps: true },
 )
