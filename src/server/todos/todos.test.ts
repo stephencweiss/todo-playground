@@ -15,13 +15,16 @@ describe('Server', () => {
       })
   })
   test('POST /todo', async () => {
-    const test = { description: `Test ${new Date().toISOString()}` }
+    const test = {
+      name: `Test ${new Date().toISOString()}`,
+      due: new Date(),
+    }
     await request(app)
       .post('/api/todo')
       .send(test)
       .expect(201)
       .then((response: any) => {
-        expect(response.body.description).toEqual(test.description)
+        expect(response.body.name).toEqual(test.name)
         expect(response.body._id).toBeTruthy()
       })
   })
@@ -34,7 +37,7 @@ describe('Server', () => {
         expect(response.error.text).toContain(`No TODO with id ${id}`)
       })
 
-    const test = { description: `Test ${new Date().toISOString()}` }
+    const test = { name: `Test ${new Date().toISOString()}` }
     const posted = await request(app).post('/api/todo').send(test)
 
     const { _id } = posted.body
@@ -44,20 +47,20 @@ describe('Server', () => {
       .expect(200)
       .then((response: any) => {
         expect(response.body._id).toBe(_id)
-        expect(response.body.description).toBe(test.description)
+        expect(response.body.name).toBe(test.name)
       })
   })
 
   test('PATCH /todo/:id', async () => {
-    const original = { description: 'Test' }
-    const updated = { description: 'Updated-Test' }
+    const original = { name: 'Test', due: new Date() }
+    const updated = { name: 'Updated-Test' }
     const posted = await request(app).post('/api/todo').send(original)
     const { _id } = posted.body
     await request(app).patch(`/api/todo/${_id}`).send(updated).expect(204)
   })
 
   test('DELETE /todo/:id', async () => {
-    const original = { description: 'Test' }
+    const original = { name: 'Test', due: new Date() }
     const posted = await request(app).post('/api/todo').send(original)
 
     const { _id } = posted.body

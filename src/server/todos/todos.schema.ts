@@ -1,11 +1,28 @@
 import mongoose from 'mongoose'
 import { Todo } from './todos.model'
 
-// TODO: Add the user object and relate to the User model (simplest would just be to store the _id, but might consider storing the entire model)
 export const todoSchema = new mongoose.Schema<Todo>(
   {
-    description: { type: String, required: true },
+    name: { type: String, required: true },
     done: Boolean,
+    notes: String,
+    due: Date,
+    createdBy: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: 'User',
+    },
+    status: {
+      type: String,
+      required: true,
+      enum: ['Active', 'Past Due', 'Completed'],
+      default: 'Active',
+    },
+    // Associate a todo with a list
+    // list: {
+    //   type: mongoose.SchemaTypes.ObjectId,
+    //   ref: 'List',
+    //   required: true,
+    // },
   },
   { timestamps: true },
 )
