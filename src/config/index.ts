@@ -1,68 +1,72 @@
 import dotenv from 'dotenv'
-
-// Set the NODE_ENV to 'development' by default
-process.env.NODE_ENV = process.env.NODE_ENV || 'development'
+import merge from 'lodash.merge'
+import { Config } from './types'
+import { config as devConfig } from './dev'
+import { config as testingConfig } from './testing'
+import { config as prodConfig } from './prod'
 
 const envFound = dotenv.config()
+
 if (envFound.error) {
   // This error should crash whole process
-
   throw new Error("⚠️  Couldn't find .env file  ⚠️")
 }
 
-export const config = {
+// Set the NODE_ENV to 'development' by default
+const env = process.env.NODE_ENV || 'development'
+
+let envConfig = {}
+
+switch (env) {
+  case 'dev':
+  case 'development':
+    envConfig = devConfig
+    break
+  case 'test':
+  case 'testing':
+    envConfig = testingConfig
+    break
+  default:
+    envConfig = prodConfig
+}
+
+const baseConfig: Config = {
+  env,
+  isDev: env === 'development',
+  isTest: env === 'testing',
+
   port: process.env.PORT ?? 3000,
 
   /**
    * Database connections
    */
-  dbUser: process.env.DB_USER,
-  dbPassword: process.env.DB_PASSWORD,
-
+  db: {
+    name: process.env.DB_NAME ?? '',
+    user: process.env.DB_USER ?? '',
+    password: process.env.DB_PASSWORD ?? '',
+  },
   /**
    * Your secret sauce
    */
-  jwtSecret: process.env.JWT_SECRET,
-  jwtAlgorithm: process.env.JWT_ALGO,
-  jwtExpiryDays: 60,
+  secrets: {
+    secretPhrase: process.env.JWT_SECRET ?? '',
+    algorithm: process.env.JWT_ALGO ?? '',
+    expiration: 60, // days
+  },
 
-  // TODO revisit the remaining of this config
-  //
   /**
-   * Used by winston logger
+   * Used by morgan logger
    */
   logs: {
-    level: process.env.LOG_LEVEL || 'silly',
+    level: process.env.LOG_LEVEL || 'common',
   },
 
-  /**
-   * Agenda.js stuff
-   */
-  agenda: {
-    dbCollection: process.env.AGENDA_DB_COLLECTION,
-    pooltime: process.env.AGENDA_POOL_TIME,
-    concurrency: parseInt(process.env.AGENDA_CONCURRENCY ?? '', 10),
-  },
-
-  /**
-   * Agendash config
-   */
-  agendash: {
-    user: 'agendash',
-    password: '123456',
-  },
   /**
    * API configs
    */
   api: {
     prefix: '/api',
   },
-  /**
-   * Mailgun email credentials
-   */
-  emails: {
-    apiKey: process.env.MAILGUN_API_KEY,
-    apiUsername: process.env.MAILGUN_USERNAME,
-    domain: process.env.MAILGUN_DOMAIN,
-  },
 }
+
+export const config = merge(baseConfig, envConfig)

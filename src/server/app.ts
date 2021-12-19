@@ -8,8 +8,6 @@ import { dbConnect } from '../db'
 import { authRouter } from './auth'
 import { userRouter } from './users'
 
-const devEnv = (process?.env?.NODE_ENV ?? '') === 'development'
-const testEnv = (process?.env?.NODE_ENV ?? '') === 'test'
 dbConnect()
 
 const allowList = ['http://mydomain.com', 'http://myotherdomain.com']
@@ -35,10 +33,10 @@ const apiRouter = express.Router()
 app.use(cors(corsOptions))
 app.use(bp.urlencoded({ extended: true }))
 app.use(bp.json())
-app.use(morgan(devEnv || testEnv ? 'dev' : 'common'))
+app.use(morgan(config.logs?.level ?? 'common'))
 
 /** Routes */
-app.use(config.api.prefix, apiRouter)
+app.use(config.api?.prefix ?? '/api', apiRouter)
 apiRouter.use('/auth', authRouter)
 /** TODO: Add Middleware for Protected Routes */
 apiRouter.use('/todo', todoRouter)

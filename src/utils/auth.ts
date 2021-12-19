@@ -7,7 +7,7 @@ import { config } from '../config'
 
 export function generateToken(body: object) {
   const now = new Date()
-  const future = add(now, { days: config.jwtExpiryDays })
+  const future = add(now, { days: config.secrets?.expiration })
   const diff = differenceInSeconds(future, now)
   console.log({
     exp: diff,
@@ -20,7 +20,7 @@ export function generateToken(body: object) {
       ...body,
       exp: diff,
     },
-    config.jwtSecret ?? '',
+    config.secrets?.secretPhrase ?? '',
   )
 }
 
