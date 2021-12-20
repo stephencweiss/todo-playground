@@ -7,6 +7,7 @@ import { todoRouter } from './todos'
 import { dbConnect } from '../db'
 import { authRouter } from './auth'
 import { userRouter } from './users'
+import { protect } from './middleware/protect'
 
 dbConnect()
 
@@ -38,7 +39,9 @@ app.use(morgan(config.logs?.level ?? 'common'))
 /** Routes */
 app.use(config.api?.prefix ?? '/api', apiRouter)
 apiRouter.use('/auth', authRouter)
-/** TODO: Add Middleware for Protected Routes */
+
+/** Protected routes */
+apiRouter.use(protect)
 apiRouter.use('/todo', todoRouter)
 apiRouter.use('/', userRouter)
 

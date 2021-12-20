@@ -4,16 +4,18 @@ import add from 'date-fns/add'
 import differenceInSeconds from 'date-fns/differenceInSeconds'
 import { User } from '../server/users/users.model'
 import { config } from '../config'
+import { Types } from 'mongoose'
 
-export function generateToken(body: object) {
+type TokenBody = {
+  id: Types.ObjectId
+  email?: string
+  username?: string
+}
+
+export function generateToken(body: TokenBody) {
   const now = new Date()
   const future = add(now, { days: config.secrets?.expiration })
   const diff = differenceInSeconds(future, now)
-  console.log({
-    exp: diff,
-    now,
-    future,
-  })
 
   return jwt.sign(
     {
@@ -24,7 +26,13 @@ export function generateToken(body: object) {
   )
 }
 
-export function verifyToken() {}
+export const verifyToken = (token: string) =>
+  new Promise((resolve, reject) => {
+    jwt.verify(token, config.secrets?.secretPhrase ?? '', (err, payload) => {
+      if (err) return reject(err)
+      resolve(payload)
+    })
+  })
 
 export function verifyPassword(
   password: string,
