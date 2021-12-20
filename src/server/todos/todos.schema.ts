@@ -10,6 +10,7 @@ export const todoSchema = new mongoose.Schema<Todo>(
     createdBy: {
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'User',
+      required: true,
     },
     status: {
       type: String,

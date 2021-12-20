@@ -1,9 +1,14 @@
 import request from 'supertest'
 import { app } from '../app'
 import { TodoModel } from './todos.schema'
+import { UserModel } from '../users/users.schema'
+import { User } from '../users/users.model'
 
 describe('Server', () => {
+  let user: User
   beforeEach(async () => {
+    await UserModel.deleteMany()
+    user = await UserModel.create({ username: 'test', email: 't@g.co' })
     await TodoModel.deleteMany()
   })
   test('GET /todos', async () => {
@@ -18,6 +23,7 @@ describe('Server', () => {
     const test = {
       name: `Test ${new Date().toISOString()}`,
       due: new Date(),
+      createdBy: user,
     }
     await request(app)
       .post('/api/todo')
@@ -37,7 +43,7 @@ describe('Server', () => {
         expect(response.error.text).toContain(`No TODO with id ${id}`)
       })
 
-    const test = { name: `Test ${new Date().toISOString()}` }
+    const test = { name: `Test ${new Date().toISOString()}`, createdBy: user }
     const posted = await request(app).post('/api/todo').send(test)
 
     const { _id } = posted.body
@@ -52,7 +58,7 @@ describe('Server', () => {
   })
 
   test('PATCH /todo/:id', async () => {
-    const original = { name: 'Test', due: new Date() }
+    const original = { name: 'Test', due: new Date(), createdBy: user }
     const updated = { name: 'Updated-Test' }
     const posted = await request(app).post('/api/todo').send(original)
     const { _id } = posted.body
@@ -60,7 +66,7 @@ describe('Server', () => {
   })
 
   test('DELETE /todo/:id', async () => {
-    const original = { name: 'Test', due: new Date() }
+    const original = { name: 'Test', due: new Date(), createdBy: user }
     const posted = await request(app).post('/api/todo').send(original)
 
     const { _id } = posted.body
