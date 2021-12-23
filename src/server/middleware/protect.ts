@@ -35,9 +35,6 @@ export const protect = async (
 
   const user = await fetchUserById(payload.id)
 
-  console.log(`temp: verify user doesn't have sensitive information here: `, {
-    user,
-  })
   if (!user) {
     return res.status(401).end()
   }
