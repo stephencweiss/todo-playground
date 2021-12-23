@@ -1,25 +1,20 @@
-import { Todo } from './todos.model'
-import * as dal from './todos.dal'
+import { CreateTodoInput, Todo } from './todos.domain'
+import { todoDal } from './todos.dal'
 import { FilterQuery } from 'mongoose'
+import { User } from '../users'
 
 export const fetchTodos = async (
   query?: FilterQuery<Todo>,
-): Promise<any | Todo[]> => {
-  return await dal.findTodo(query)
-}
+): Promise<any | Todo[]> => await todoDal.find(query)
 
-export const fetchTodoById = async (id: string): Promise<Todo | null> => {
-  return await dal.findTodoById(id)
-}
+export const fetchTodoById = async (id: string): Promise<Todo | null> =>
+  await todoDal.findById(id)
 
-export const insertTodo = async (todo: Todo): Promise<Todo> => {
-  return await dal.saveTodo(todo)
-}
+export const insertTodo = async (
+  todo: CreateTodoInput & { createdBy?: User },
+): Promise<Todo> => await todoDal.save(todo)
 
-export const updateTodo = async (id: string, updates: Partial<Todo>) => {
-  return await dal.updateTodo(id, updates)
-}
+export const updateTodo = async (id: string, updates: Partial<Todo>) =>
+  await todoDal.update(id, updates)
 
-export const removeTodo = async (id: string) => {
-  return await dal.removeTodo(id)
-}
+export const removeTodo = async (id: string) => await todoDal.deleteById(id)

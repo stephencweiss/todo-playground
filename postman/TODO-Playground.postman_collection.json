@@ -6,26 +6,33 @@
   },
   "item": [
     {
-      "name": "/TODOs",
+      "name": "/TODO",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
       "request": {
         "method": "GET",
         "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": ""
+        },
         "url": {
-          "raw": "{{baseURL}}/api/todos",
+          "raw": "{{baseURL}}/api/todo",
           "host": ["{{baseURL}}"],
-          "path": ["api", "todos"]
+          "path": ["api", "todo"]
         }
       },
       "response": []
     },
     {
-      "name": "/TODOs",
+      "name": "/TODO",
       "request": {
         "method": "POST",
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\n    \"description\": \"This is a test\"\n}",
+          "raw": "{\n    \"name\": \"This is a test\"\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -33,15 +40,59 @@
           }
         },
         "url": {
-          "raw": "{{baseURL}}/api/todos",
+          "raw": "{{baseURL}}/api/todo",
           "host": ["{{baseURL}}"],
-          "path": ["api", "todos"]
+          "path": ["api", "todo"]
         }
       },
       "response": []
     },
     {
-      "name": "/TODOs/:id",
+      "name": "/signup",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"username\": \"stephen4\",\n    \"email\": \"a4@b.co\",\n    \"password\": \"123-foo\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseURL}}/api/auth/signup",
+          "host": ["{{baseURL}}"],
+          "path": ["api", "auth", "signup"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/signin",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n\"email\": \"a3@b.co\",\n    \"password\": \"123-foo\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseURL}}/api/auth/signin",
+          "host": ["{{baseURL}}"],
+          "path": ["api", "auth", "signin"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/TODO/:id",
       "request": {
         "method": "GET",
         "header": [],
@@ -60,18 +111,27 @@
       "response": []
     },
     {
-      "name": "/TODOs/:id",
+      "name": "/TODO/:id",
       "request": {
         "method": "PATCH",
         "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"description\": \"a _new_ name\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
         "url": {
-          "raw": "{{baseURL}}/api/todos/:id",
+          "raw": "{{baseURL}}/api/todo/:id",
           "host": ["{{baseURL}}"],
-          "path": ["api", "todos", ":id"],
+          "path": ["api", "todo", ":id"],
           "variable": [
             {
               "key": "id",
-              "value": null
+              "value": "3"
             }
           ]
         }
@@ -79,14 +139,14 @@
       "response": []
     },
     {
-      "name": "New Request",
+      "name": "/TODO/:id",
       "request": {
         "method": "DELETE",
         "header": [],
         "url": {
-          "raw": "{{baseURL}}/api/todos/:id",
+          "raw": "{{baseURL}}/api/todo/:id",
           "host": ["{{baseURL}}"],
-          "path": ["api", "todos", ":id"],
+          "path": ["api", "todo", ":id"],
           "variable": [
             {
               "key": "id",

@@ -1,66 +1,102 @@
 import request from 'supertest'
 import { app } from '../app'
 import { TodoModel } from './todos.schema'
+import { UserModel } from '../users/users.schema'
 
-describe('Server', () => {
+describe('/todo router', () => {
+  const userInput = { username: 'test', email: 't@g.co', password: 'test123' }
+  let jwt: string
+  const ROOT_PATH = '/api/todo'
+
   beforeEach(async () => {
+    await UserModel.deleteMany()
     await TodoModel.deleteMany()
+    jwt = await (
+      await request(app).post('/api/auth/signup').send(userInput)
+    ).body.data
   })
-  test('GET /todos', async () => {
+
+  test('GET /', async () => {
     await request(app)
-      .get('/api/todo')
+      .get(ROOT_PATH)
+      .set({ authorization: `Bearer ${jwt}` })
       .expect(200)
       .then((response: any) => {
         expect(response.body).toEqual([])
       })
   })
-  test('POST /todo', async () => {
-    const test = { description: `Test ${new Date().toISOString()}` }
+
+  test('POST /', async () => {
+    const test = {
+      name: `Test ${new Date().toISOString()}`,
+      due: new Date(),
+    }
     await request(app)
-      .post('/api/todo')
+      .post(ROOT_PATH)
+      .set({ authorization: `Bearer ${jwt}` })
       .send(test)
       .expect(201)
       .then((response: any) => {
-        expect(response.body.description).toEqual(test.description)
-        expect(response.body._id).toBeTruthy()
+        const { data } = response.body
+        expect(data.name).toEqual(test.name)
+        expect(data._id).toBeTruthy()
       })
   })
-  test('GET /todo/:id', async () => {
-    const id = '61aec76836b372f9eeac4042'
+
+  test('GET /:id', async () => {
+    const id = '61aec76836b372f9eeac4042' // This is a TEST id; it is expected to *not* exist
     await request(app)
-      .get(`/api/todo/${id}`)
+      .get(`${ROOT_PATH}/${id}`)
+      .set({ authorization: `Bearer ${jwt}` })
       .expect(404)
       .then((response: any) => {
-        expect(response.error.text).toContain(`No TODO with id ${id}`)
+        expect(response.body.error).toContain(`No TODO with id ${id}`)
       })
 
-    const test = { description: `Test ${new Date().toISOString()}` }
-    const posted = await request(app).post('/api/todo').send(test)
+    const test = { name: `Test ${new Date().toISOString()}` }
+    const posted = await request(app)
+      .post(ROOT_PATH)
+      .set({ authorization: `Bearer ${jwt}` })
+      .send(test)
 
-    const { _id } = posted.body
-
+    const { _id } = posted.body.data
     await request(app)
-      .get(`/api/todo/${_id}`)
+      .get(`${ROOT_PATH}/${_id}`)
+      .set({ authorization: `Bearer ${jwt}` })
       .expect(200)
       .then((response: any) => {
-        expect(response.body._id).toBe(_id)
-        expect(response.body.description).toBe(test.description)
+        const { data } = response.body
+        expect(data._id).toBe(_id)
+        expect(data.name).toBe(test.name)
       })
   })
 
-  test('PATCH /todo/:id', async () => {
-    const original = { description: 'Test' }
-    const updated = { description: 'Updated-Test' }
-    const posted = await request(app).post('/api/todo').send(original)
-    const { _id } = posted.body
-    await request(app).patch(`/api/todo/${_id}`).send(updated).expect(204)
+  test('PATCH /:id', async () => {
+    const original = { name: 'Test', due: new Date() }
+    const updated = { name: 'Updated-Test' }
+    const posted = await request(app)
+      .post(ROOT_PATH)
+      .set({ authorization: `Bearer ${jwt}` })
+      .send(original)
+    const { _id } = posted.body.data
+    await request(app)
+      .patch(`${ROOT_PATH}/${_id}`)
+      .set({ authorization: `Bearer ${jwt}` })
+      .send(updated)
+      .expect(204)
   })
 
-  test('DELETE /todo/:id', async () => {
-    const original = { description: 'Test' }
-    const posted = await request(app).post('/api/todo').send(original)
+  test('DELETE /:id', async () => {
+    const original = { name: 'Test', due: new Date() }
+    const posted = await request(app)
+      .post(ROOT_PATH)
+      .set({ authorization: `Bearer ${jwt}` })
+      .send(original)
 
-    const { _id } = posted.body
-    await request(app).delete(`/api/todo/${_id}`).expect(204)
+    const { _id } = posted.body.data
+    await request(app)
+      .delete(`${ROOT_PATH}/${_id}`)
+      .set({ authorization: `Bearer ${jwt}` })
+      .expect(204)
   })
 })

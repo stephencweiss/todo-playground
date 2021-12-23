@@ -1,15 +1,18 @@
-import mongoose from 'mongoose'
+import mongoose, { ConnectionOptions } from 'mongoose'
 import { config } from '../config'
 
-const dbName = process.env.NODE_ENV === 'test' ? 'todo-test' : 'todo-playground'
-const CONNECTION_STRING = `mongodb+srv://${config.dbUser}:${config.dbPassword}@sandbox.tv0tb.mongodb.net/${dbName}?retryWrites=true&w=majority`
+const { name, user, password } = config?.db ?? {}
+const CONNECTION_STRING = process.env.OFFLINE_DEV
+  ? `mongodb://127.0.0.1:27017/${name}?directConnection=true&serverSelectionTimeoutMS=2000`
+  : `mongodb+srv://${user}:${password}@sandbox.tv0tb.mongodb.net/${name}?retryWrites=true&w=majority`
 
-export async function dbConnect() {
+export async function dbConnect(opts: ConnectionOptions = {}) {
   try {
     return await mongoose.connect(CONNECTION_STRING, {
       // TODO: Do load testing on pool sizing
       maxPoolSize: 10,
       minPoolSize: 1,
+      ...opts,
     })
   } catch (e) {
     console.log(
