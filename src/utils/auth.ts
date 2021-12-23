@@ -29,7 +29,6 @@ export function generateToken(body: TokenBody) {
 export const verifyToken = async (token: string) =>
   await jwt.verify(token, config.secrets?.secretPhrase ?? '')
 
-
 export function verifyPassword(
   password: string,
   user: Pick<User, 'salt' | 'hash'>,
