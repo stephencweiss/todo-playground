@@ -26,13 +26,9 @@ export function generateToken(body: TokenBody) {
   )
 }
 
-export const verifyToken = (token: string) =>
-  new Promise((resolve, reject) => {
-    jwt.verify(token, config.secrets?.secretPhrase ?? '', (err, payload) => {
-      if (err) return reject(err)
-      resolve(payload)
-    })
-  })
+export const verifyToken = async (token: string) => {
+  return await jwt.verify(token, config.secrets?.secretPhrase ?? '')
+}
 
 export function verifyPassword(
   password: string,

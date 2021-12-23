@@ -1,6 +1,7 @@
-import { Todo } from './todos.model'
+import { CreateTodoInput, Todo } from './todos.domain'
 import * as dal from './todos.dal'
 import { FilterQuery } from 'mongoose'
+import { User } from '../users'
 
 export const fetchTodos = async (
   query?: FilterQuery<Todo>,
@@ -12,7 +13,9 @@ export const fetchTodoById = async (id: string): Promise<Todo | null> => {
   return await dal.findTodoById(id)
 }
 
-export const insertTodo = async (todo: Todo): Promise<Todo> => {
+export const insertTodo = async (
+  todo: CreateTodoInput & { createdBy?: User },
+): Promise<Todo> => {
   return await dal.saveTodo(todo)
 }
 

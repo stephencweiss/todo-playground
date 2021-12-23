@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import { Todo } from './todos.model'
+import { Todo } from './todos.domain'
 
 export const todoSchema = new mongoose.Schema<Todo>(
   {

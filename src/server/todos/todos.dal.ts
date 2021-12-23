@@ -1,8 +1,11 @@
 import { FilterQuery } from 'mongoose'
-import { Todo } from '.'
+import { CreateTodoInput, Todo } from '.'
+import { User } from '../users'
 import { TodoModel } from './todos.schema'
 
-export const saveTodo = async (todo: Todo) => {
+export const saveTodo = async (
+  todo: CreateTodoInput & { createdBy?: User },
+) => {
   return await TodoModel.create(todo)
 }
 

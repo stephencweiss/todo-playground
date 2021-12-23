@@ -1,8 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
-import { Types } from 'mongoose'
 import { verifyToken } from '../../utils'
 import { User } from '../users'
-import { UserModel } from '../users/users.schema'
+import { fetchUserById } from '../users/user.service'
 
 declare module 'express' {
   export interface Request {
@@ -10,7 +9,7 @@ declare module 'express' {
   }
 }
 
-const payloadHasId = (payload: unknown): payload is { id: Types.ObjectId } => {
+const payloadHasId = (payload: unknown): payload is { id: string } => {
   return Boolean(payload && typeof payload === 'object' && 'id' in payload)
 }
 
@@ -21,22 +20,20 @@ export const protect = async (
 ) => {
   const bearer = req?.headers?.authorization
 
+  // TODO: consolidate the JWT parsing
   if (!bearer || !bearer.startsWith('Bearer ')) {
     return res.status(401).end()
   }
 
   const token = bearer.split('Bearer ')[1].trim()
-  let payload
-  try {
-    payload = await verifyToken(token)
-    if (!payloadHasId(payload)) {
-      throw new Error('Token missing required information')
-    }
-  } catch (e) {
+
+  const payload = await verifyToken(token).catch((e) => new Error(e))
+
+  if (!payloadHasId(payload) || payload instanceof Error) {
     return res.status(401).end()
   }
 
-  const user = await UserModel.findById(payload.id).select('-salt -hash')
+  const user = await fetchUserById(payload.id)
 
   console.log(`temp: verify user doesn't have sensitive information here: `, {
     user,
