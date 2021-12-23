@@ -2,10 +2,11 @@ import { FilterQuery, UpdateQuery } from 'mongoose'
 import { Model } from 'mongoose'
 
 export const genericDal = <T, I>(model: Model<T>) => ({
-  findById: (id: string) => model.findById(id).exec(),
-  save: (input: I) => model.create(input),
   find: (query?: FilterQuery<T>) =>
-    query ? model.find(query).exec() : model.find().lean().exec(),
+    query ? model.find(query).lean().exec() : model.find().lean().exec(),
+  findById: (id: string) => model.findById(id).exec(),
+  findOne: (query: FilterQuery<T>) => model.findOne(query).exec(),
+  save: (input: I) => model.create(input),
   update: (id: string, update: UpdateQuery<T>) =>
     model.findByIdAndUpdate(id, update, { new: true }).lean().exec(),
   // TODO: Figure out why I can't do a general "delete"
