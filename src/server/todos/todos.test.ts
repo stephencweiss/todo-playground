@@ -3,9 +3,10 @@ import { app } from '../app'
 import { TodoModel } from './todos.schema'
 import { UserModel } from '../users/users.schema'
 
-describe('Server', () => {
+describe('/todo router', () => {
   const userInput = { username: 'test', email: 't@g.co', password: 'test123' }
   let jwt: string
+  const ROOT_PATH = '/api/todo'
 
   beforeEach(async () => {
     await UserModel.deleteMany()
@@ -15,9 +16,9 @@ describe('Server', () => {
     ).body.data
   })
 
-  test('GET /todos', async () => {
+  test('GET /', async () => {
     await request(app)
-      .get('/api/todo')
+      .get(ROOT_PATH)
       .set({ authorization: `Bearer ${jwt}` })
       .expect(200)
       .then((response: any) => {
@@ -25,13 +26,13 @@ describe('Server', () => {
       })
   })
 
-  test('POST /todo', async () => {
+  test('POST /', async () => {
     const test = {
       name: `Test ${new Date().toISOString()}`,
       due: new Date(),
     }
     await request(app)
-      .post('/api/todo')
+      .post(ROOT_PATH)
       .set({ authorization: `Bearer ${jwt}` })
       .send(test)
       .expect(201)
@@ -42,10 +43,10 @@ describe('Server', () => {
       })
   })
 
-  test('GET /todo/:id', async () => {
+  test('GET /:id', async () => {
     const id = '61aec76836b372f9eeac4042' // This is a TEST id; it is expected to *not* exist
     await request(app)
-      .get(`/api/todo/${id}`)
+      .get(`${ROOT_PATH}/${id}`)
       .set({ authorization: `Bearer ${jwt}` })
       .expect(404)
       .then((response: any) => {
@@ -54,13 +55,13 @@ describe('Server', () => {
 
     const test = { name: `Test ${new Date().toISOString()}` }
     const posted = await request(app)
-      .post('/api/todo')
+      .post(ROOT_PATH)
       .set({ authorization: `Bearer ${jwt}` })
       .send(test)
 
     const { _id } = posted.body.data
     await request(app)
-      .get(`/api/todo/${_id}`)
+      .get(`${ROOT_PATH}/${_id}`)
       .set({ authorization: `Bearer ${jwt}` })
       .expect(200)
       .then((response: any) => {
@@ -70,31 +71,31 @@ describe('Server', () => {
       })
   })
 
-  test('PATCH /todo/:id', async () => {
+  test('PATCH /:id', async () => {
     const original = { name: 'Test', due: new Date() }
     const updated = { name: 'Updated-Test' }
     const posted = await request(app)
-      .post('/api/todo')
+      .post(ROOT_PATH)
       .set({ authorization: `Bearer ${jwt}` })
       .send(original)
     const { _id } = posted.body.data
     await request(app)
-      .patch(`/api/todo/${_id}`)
+      .patch(`${ROOT_PATH}/${_id}`)
       .set({ authorization: `Bearer ${jwt}` })
       .send(updated)
       .expect(204)
   })
 
-  test('DELETE /todo/:id', async () => {
+  test('DELETE /:id', async () => {
     const original = { name: 'Test', due: new Date() }
     const posted = await request(app)
-      .post('/api/todo')
+      .post(ROOT_PATH)
       .set({ authorization: `Bearer ${jwt}` })
       .send(original)
 
     const { _id } = posted.body.data
     await request(app)
-      .delete(`/api/todo/${_id}`)
+      .delete(`${ROOT_PATH}/${_id}`)
       .set({ authorization: `Bearer ${jwt}` })
       .expect(204)
   })
