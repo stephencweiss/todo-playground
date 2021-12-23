@@ -1,28 +1,28 @@
 import { CreateTodoInput, Todo } from './todos.domain'
-import * as dal from './todos.dal'
+import { todoDal } from './todos.dal'
 import { FilterQuery } from 'mongoose'
 import { User } from '../users'
 
 export const fetchTodos = async (
   query?: FilterQuery<Todo>,
 ): Promise<any | Todo[]> => {
-  return await dal.findTodo(query)
+  return await todoDal.find(query)
 }
 
 export const fetchTodoById = async (id: string): Promise<Todo | null> => {
-  return await dal.findTodoById(id)
+  return await todoDal.findById(id)
 }
 
 export const insertTodo = async (
   todo: CreateTodoInput & { createdBy?: User },
 ): Promise<Todo> => {
-  return await dal.saveTodo(todo)
+  return await todoDal.save(todo)
 }
 
 export const updateTodo = async (id: string, updates: Partial<Todo>) => {
-  return await dal.updateTodo(id, updates)
+  return await todoDal.update(id, updates)
 }
 
 export const removeTodo = async (id: string) => {
-  return await dal.removeTodo(id)
+  return await todoDal.deleteById(id)
 }
