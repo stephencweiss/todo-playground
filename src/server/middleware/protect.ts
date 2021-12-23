@@ -1,7 +1,14 @@
 import { Request, Response, NextFunction } from 'express'
 import { Types } from 'mongoose'
 import { verifyToken } from '../../utils'
-import { UserModel } from '../users'
+import { User } from '../users'
+import { UserModel } from '../users/users.schema'
+
+declare module 'express' {
+  export interface Request {
+    user?: User
+  }
+}
 
 const payloadHasId = (payload: unknown): payload is { id: Types.ObjectId } => {
   return Boolean(payload && typeof payload === 'object' && 'id' in payload)
@@ -29,10 +36,7 @@ export const protect = async (
     return res.status(401).end()
   }
 
-  const user = await UserModel.findById(payload.id)
-    .select('-salt -hash')
-    .lean()
-    .exec()
+  const user = await UserModel.findById(payload.id).select('-salt -hash')
 
   console.log(`temp: verify user doesn't have sensitive information here: `, {
     user,
@@ -41,7 +45,6 @@ export const protect = async (
     return res.status(401).end()
   }
 
-  //@ts-ignore -- TODO: fix the typings with an override, e.g. https://www.npmjs.com/package/@types/method-override
   req.user = user
   next()
 }
