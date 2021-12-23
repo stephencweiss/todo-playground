@@ -20,7 +20,6 @@ export const createOne = async (
     const insertedTodo = await insertTodo({ ...req.body, createdBy })
     return res.status(201).json({ data: insertedTodo })
   } catch (e) {
-    console.error(e)
     res.status(400).end()
   }
 }
@@ -36,10 +35,10 @@ export const fetchTodoById = async (
     const { id } = req.params
     const found = await getTodoById(id)
     if (!found) throw new Error(`No TODO with id ${id}`)
-    res.send(found)
+    res.json({ data: found })
   } catch (e: unknown) {
     if (hasMessage(e)) {
-      res.status(404).send({ error: e.message })
+      res.status(404).json({ error: e.message })
     } else {
       res.status(404).send()
     }
