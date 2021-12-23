@@ -20,15 +20,15 @@ export function generateToken(body: TokenBody) {
   return jwt.sign(
     {
       ...body,
-      exp: diff,
+      expiresIn: diff,
     },
     config.secrets?.secretPhrase ?? '',
   )
 }
 
-export const verifyToken = async (token: string) => {
-  return await jwt.verify(token, config.secrets?.secretPhrase ?? '')
-}
+export const verifyToken = async (token: string) =>
+  await jwt.verify(token, config.secrets?.secretPhrase ?? '')
+
 
 export function verifyPassword(
   password: string,
